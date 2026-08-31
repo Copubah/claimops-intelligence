@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# JavaScript
+node_modules/
+dist/
+coverage/
+.vite/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# AWS and local tooling
+.aws-sam/
+.serverless/
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Generated data and reports
+data/generated/
+reports/generated/
+
