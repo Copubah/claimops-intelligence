@@ -18,4 +18,6 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`. Validate all sidebar routes, the active state, the unknown-route page, and the mobile navigation below 960px. Phase 4 will replace the Overview placeholder with synthetic operational data.
+Open `http://localhost:5173`. The Phase 4 overview reads the reproducible fixture at `public/data/overview.json`. Regenerate it from the repository root with `python3 scripts/build_overview_fixture.py`.
+
+Validate the KPI cards, charts, priority table, all sidebar routes, the unknown-route page, and the mobile navigation below 960px. Phase 5 will introduce the claims API; the overview intentionally uses a static synthetic snapshot until backend integration.

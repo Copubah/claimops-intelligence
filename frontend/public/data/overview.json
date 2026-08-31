@@ -1,0 +1,202 @@
+{
+  "generated_at": "2026-08-31T12:00:00Z",
+  "reference_date": "2026-08-31",
+  "data_classification": "SYNTHETIC",
+  "metrics": {
+    "received_today": 11,
+    "finalized_today": 11,
+    "pending": 1548,
+    "approved": 302,
+    "rejected": 150,
+    "approval_rate": 66.8,
+    "average_tat_hours": 119.4,
+    "sla_compliance": 71.4,
+    "sla_at_risk": 197,
+    "sla_breached": 218,
+    "missing_documents": 543,
+    "risk_review": 125,
+    "unassigned": 92,
+    "active_escalations": 100
+  },
+  "volume_trend": [
+    {
+      "date": "18 Aug",
+      "received": 18,
+      "finalized": 7
+    },
+    {
+      "date": "19 Aug",
+      "received": 17,
+      "finalized": 5
+    },
+    {
+      "date": "20 Aug",
+      "received": 27,
+      "finalized": 6
+    },
+    {
+      "date": "21 Aug",
+      "received": 33,
+      "finalized": 6
+    },
+    {
+      "date": "22 Aug",
+      "received": 24,
+      "finalized": 4
+    },
+    {
+      "date": "23 Aug",
+      "received": 28,
+      "finalized": 6
+    },
+    {
+      "date": "24 Aug",
+      "received": 26,
+      "finalized": 4
+    },
+    {
+      "date": "25 Aug",
+      "received": 26,
+      "finalized": 6
+    },
+    {
+      "date": "26 Aug",
+      "received": 13,
+      "finalized": 1
+    },
+    {
+      "date": "27 Aug",
+      "received": 22,
+      "finalized": 6
+    },
+    {
+      "date": "28 Aug",
+      "received": 24,
+      "finalized": 12
+    },
+    {
+      "date": "29 Aug",
+      "received": 19,
+      "finalized": 13
+    },
+    {
+      "date": "30 Aug",
+      "received": 20,
+      "finalized": 14
+    },
+    {
+      "date": "31 Aug",
+      "received": 11,
+      "finalized": 11
+    }
+  ],
+  "sla_distribution": [
+    {
+      "status": "HEALTHY",
+      "value": 869
+    },
+    {
+      "status": "WATCH",
+      "value": 264
+    },
+    {
+      "status": "AT_RISK",
+      "value": 197
+    },
+    {
+      "status": "BREACHED",
+      "value": 218
+    }
+  ],
+  "pipeline": [
+    {
+      "stage": "Submitted",
+      "value": 148
+    },
+    {
+      "stage": "Document Review",
+      "value": 457
+    },
+    {
+      "stage": "Verification",
+      "value": 326
+    },
+    {
+      "stage": "Assessment",
+      "value": 285
+    },
+    {
+      "stage": "Approval",
+      "value": 186
+    },
+    {
+      "stage": "Payment",
+      "value": 146
+    }
+  ],
+  "attention": [
+    {
+      "priority": "CRITICAL",
+      "claim_id": "CLM-29554",
+      "issue": "SLA breached",
+      "stage": "Approval",
+      "partner": "AfriCredit",
+      "owner": "Agent Chao",
+      "recommended_action": "Escalate and resolve the delayed stage"
+    },
+    {
+      "priority": "CRITICAL",
+      "claim_id": "CLM-28888",
+      "issue": "SLA breached",
+      "stage": "Submitted",
+      "partner": "QuickFinance",
+      "owner": "Agent Baraka",
+      "recommended_action": "Escalate and resolve the delayed stage"
+    },
+    {
+      "priority": "CRITICAL",
+      "claim_id": "CLM-28444",
+      "issue": "SLA breached",
+      "stage": "Document Review",
+      "partner": "FarmTrust",
+      "owner": "Agent Baraka",
+      "recommended_action": "Escalate and resolve the delayed stage"
+    },
+    {
+      "priority": "CRITICAL",
+      "claim_id": "CLM-29937",
+      "issue": "SLA breached",
+      "stage": "Assessment",
+      "partner": "AfriCredit",
+      "owner": "Agent Femi",
+      "recommended_action": "Escalate and resolve the delayed stage"
+    },
+    {
+      "priority": "CRITICAL",
+      "claim_id": "CLM-28220",
+      "issue": "SLA breached",
+      "stage": "Document Review",
+      "partner": "QuickFinance",
+      "owner": "Agent Amina",
+      "recommended_action": "Escalate and resolve the delayed stage"
+    },
+    {
+      "priority": "CRITICAL",
+      "claim_id": "CLM-28074",
+      "issue": "SLA breached",
+      "stage": "Document Review",
+      "partner": "AfriCredit",
+      "owner": "Agent Amina",
+      "recommended_action": "Escalate and resolve the delayed stage"
+    },
+    {
+      "priority": "CRITICAL",
+      "claim_id": "CLM-29790",
+      "issue": "SLA breached",
+      "stage": "Document Review",
+      "partner": "QuickFinance",
+      "owner": "Agent Deka",
+      "recommended_action": "Escalate and resolve the delayed stage"
+    }
+  ]
+}

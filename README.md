@@ -2,7 +2,7 @@
 
 ClaimOps Intelligence is a portfolio-grade, cloud-native insurance claims operations platform designed around the workflow **Monitor → Detect → Prioritize → Recommend → Act → Report**. It uses fictional data only and is intended to demonstrate serverless AWS architecture, operational analytics, auditable action management, and automated reporting.
 
-> Status: Phase 3 complete — responsive React/Vite dashboard shell. Overview data, APIs, and AWS resources are not implemented yet.
+> Status: Phase 4 complete — responsive operations overview backed by a reproducible synthetic snapshot. APIs and AWS resources are not implemented yet.
 
 ## Problem statement
 
@@ -144,7 +144,7 @@ Confirm that documentation renders the Mermaid diagrams on GitHub, `.env` is ign
 
 ## Roadmap
 
-Development follows the 40 gated phases in the project brief. The next phase, only after explicit approval, is **Phase 4 — Dashboard overview with synthetic data**.
+Development follows the 40 gated phases in the project brief. The next phase, only after explicit approval, is **Phase 5 — Claims API/backend**.
 
 ## Future improvements
 
