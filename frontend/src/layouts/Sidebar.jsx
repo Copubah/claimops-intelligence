@@ -53,4 +53,3 @@ function NavigationItem({ item, onClick }) {
     </NavLink>
   )
 }
-

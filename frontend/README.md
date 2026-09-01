@@ -20,4 +20,4 @@ npm run dev
 
 Open `http://localhost:5173`. The Phase 4 overview reads the reproducible fixture at `public/data/overview.json`. Regenerate it from the repository root with `python3 scripts/build_overview_fixture.py`.
 
-Validate the KPI cards, charts, priority table, all sidebar routes, the unknown-route page, and the mobile navigation below 960px. Phase 5 will introduce the claims API; the overview intentionally uses a static synthetic snapshot until backend integration.
+Validate the KPI cards, charts, priority table, all sidebar routes, the unknown-route page, and the mobile navigation below 960px. Responsive checks should cover 1440 px desktop, 768 px tablet, 390 px mobile, and the 320 px minimum width. The overview intentionally uses a static synthetic snapshot until backend integration.

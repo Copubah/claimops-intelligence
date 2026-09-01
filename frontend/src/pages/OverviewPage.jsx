@@ -85,8 +85,8 @@ export function OverviewPage() {
                 <XAxis dataKey="date" tick={{ fill: '#77837d', fontSize: 10 }} axisLine={false} tickLine={false} interval={1} />
                 <YAxis tick={{ fill: '#77837d', fontSize: 10 }} axisLine={false} tickLine={false} allowDecimals={false} />
                 <Tooltip contentStyle={{ border: '1px solid #dfe5e2', borderRadius: 7, fontSize: 11 }} />
-                <Line type="monotone" dataKey="received" stroke="#2d765b" strokeWidth={2.2} dot={false} activeDot={{ r: 4 }} />
-                <Line type="monotone" dataKey="finalized" stroke="#8aa79a" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                <Line type="monotone" dataKey="received" stroke="#2d765b" strokeWidth={2.2} dot={false} activeDot={{ r: 4 }} isAnimationActive={false} />
+                <Line type="monotone" dataKey="finalized" stroke="#8aa79a" strokeWidth={2} dot={false} activeDot={{ r: 4 }} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -98,7 +98,7 @@ export function OverviewPage() {
             <div className="donut-chart" role="img" aria-label="Donut chart of open claims by SLA status">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={data.sla_distribution} dataKey="value" nameKey="status" innerRadius={54} outerRadius={76} paddingAngle={2} stroke="none">
+                  <Pie data={data.sla_distribution} dataKey="value" nameKey="status" innerRadius={54} outerRadius={76} paddingAngle={2} stroke="none" isAnimationActive={false}>
                     {data.sla_distribution.map((item) => <Cell key={item.status} fill={slaColors[item.status]} />)}
                   </Pie>
                   <Tooltip contentStyle={{ border: '1px solid #dfe5e2', borderRadius: 7, fontSize: 11 }} />
@@ -147,7 +147,7 @@ export function OverviewPage() {
                 <XAxis type="number" hide />
                 <YAxis dataKey="stage" type="category" width={105} tick={{ fill: '#66736d', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <Tooltip cursor={{ fill: '#f2f6f4' }} contentStyle={{ border: '1px solid #dfe5e2', borderRadius: 7, fontSize: 11 }} />
-                <Bar dataKey="value" fill="#4d8b72" radius={[0, 4, 4, 0]} barSize={16} />
+                <Bar dataKey="value" fill="#4d8b72" radius={[0, 4, 4, 0]} barSize={16} isAnimationActive={false} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -167,4 +167,3 @@ function OverviewState({ title, copy, error = false }) {
     </div>
   )
 }
-
