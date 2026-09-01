@@ -2,7 +2,7 @@
 
 ## Table design
 
-The planned on-demand table uses generic keys `PK` and `SK`, plus sparse `GSI1PK/GSI1SK`, `GSI2PK/GSI2SK`, and `GSI3PK/GSI3SK`. Every item includes `entity_type`, `created_at`, `updated_at`, and `schema_version`. Sensitive personal data is deliberately excluded.
+The planned on-demand table uses generic keys `PK` and `SK`, plus five sparse global secondary indexes. Every item includes `entity_type`, `created_at`, `updated_at`, and `schema_version`. Sensitive personal data is deliberately excluded. Five indexes avoid table scans for core claim access patterns; because DynamoDB is on-demand, the tradeoff is modest additional write/storage usage rather than idle capacity cost.
 
 | Entity | PK | SK | Purpose |
 |---|---|---|---|
@@ -26,15 +26,27 @@ The planned on-demand table uses generic keys `PK` and `SK`, plus sparse `GSI1PK
 | Access pattern | Key/index strategy |
 |---|---|
 | Claim detail with history | Base table `PK = CLAIM#id` |
-| Claims by stage/status, newest first | GSI1 `CLAIM_STAGE#<stage>#<status>` / `created_at#id` |
+| All claims, newest first | GSI1 `CLAIMS` / `created_at#id` |
 | Claims by SLA state/deadline | GSI2 `SLA#<state>` / `sla_deadline#id` |
 | Claims by owner | GSI3 `AGENT#<id>` / `status#updated_at#id` |
-| Action queue by priority | GSI1 `ACTION#OPEN` / `<severity>#<due_at>#id` |
-| Partner backlog | GSI3 `PARTNER#<id>` / `status#created_at#id` |
-| Reports by type and run time | GSI2 `REPORT#<type>` / `created_at#run_id` |
-| Scheduled definitions due | GSI1 `REPORT_SCHEDULE#ENABLED` / `next_run_at#id` |
+| Partner backlog | GSI4 `PARTNER#<id>` / `status#created_at#id` |
+| Claims by stage/status | GSI5 `STAGE#<stage>#<status>` / `updated_at#id` |
+
+Other entities overload these index attributes only when their access patterns require them. For example, action items can use GSI1 `ACTION#OPEN`, reports can use GSI2 `REPORT#<type>`, and scheduled definitions can use GSI1 `REPORT_SCHEDULE#ENABLED`. Sparse keys mean unrelated entities do not consume entries in every index.
 
 Claim items denormalize partner, owner, stage, and SLA attributes into sparse index keys. Index keys are updated transactionally with state. Large report files and verbose exports never go into DynamoDB.
+
+## Executable Phase 6 mapping
+
+`backend/claimops/repositories/dynamodb.py` is the canonical claim mapper and read adapter. It uses the low-level DynamoDB wire format so Lambda clients can be injected and tested without AWS access. Decimal conversion prevents unsupported floating-point writes. Unassigned claims omit GSI3 keys, making the agent index sparse.
+
+Generate table-independent seed requests without contacting AWS:
+
+```bash
+PYTHONPATH=backend:. python3 scripts/build_dynamodb_seed.py
+```
+
+The ignored output contains one DynamoDB `PutRequest` per claim. A later deployment/seeding phase will batch these into groups of 25 and apply retry/backoff for unprocessed items.
 
 ## Integrity, retention, and concurrency
 
@@ -44,4 +56,3 @@ Claim items denormalize partner, owner, stage, and SLA attributes into sparse in
 - Idempotency records and short-lived job locks use DynamoDB TTL; claims and audit history do not.
 - SLA alert markers are keyed by claim, alert type, and entered state/version so repeated EventBridge invocations do not resend.
 - Money is stored as integer minor units plus ISO currency; timestamps use UTC.
-

@@ -16,6 +16,8 @@ from claimops import __version__
 from claimops.api.routes import router
 from claimops.domain.errors import ClaimNotFoundError, InvalidCursorError
 from claimops.repositories.memory import InMemoryClaimRepository
+from claimops.repositories.claims import ClaimRepository
+from claimops.repositories.dynamodb import DynamoClaimRepository
 from claimops.services.claims import ClaimService
 
 
@@ -44,7 +46,7 @@ def create_app(claims: Iterable[Mapping[str, Any]] | None = None) -> FastAPI:
         redoc_url="/redoc",
         openapi_url="/openapi.json",
     )
-    repository = InMemoryClaimRepository(claims if claims is not None else load_local_claims())
+    repository = create_claim_repository(claims)
     application.state.claim_service = ClaimService(repository)
     application.add_middleware(
         CORSMiddleware,
@@ -83,6 +85,23 @@ def create_app(claims: Iterable[Mapping[str, Any]] | None = None) -> FastAPI:
     return application
 
 
+def create_claim_repository(claims: Iterable[Mapping[str, Any]] | None = None) -> ClaimRepository:
+    if claims is not None:
+        return InMemoryClaimRepository(claims)
+    adapter = os.getenv("CLAIMOPS_REPOSITORY", "memory").strip().lower()
+    if adapter == "memory":
+        return InMemoryClaimRepository(load_local_claims())
+    if adapter == "dynamodb":
+        import boto3
+
+        table_name = os.getenv("CLAIMOPS_TABLE_NAME", "").strip()
+        if not table_name:
+            raise RuntimeError("CLAIMOPS_TABLE_NAME is required when CLAIMOPS_REPOSITORY=dynamodb")
+        region = os.getenv("CLAIMOPS_AWS_REGION", "af-south-1")
+        return DynamoClaimRepository(boto3.client("dynamodb", region_name=region), table_name)
+    raise RuntimeError(f"Unsupported CLAIMOPS_REPOSITORY: {adapter}")
+
+
 def error_response(
     request: Request,
     status_code: int,
@@ -99,4 +118,3 @@ def error_response(
 
 
 app = create_app()
-

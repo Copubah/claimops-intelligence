@@ -8,3 +8,9 @@ python3 scripts/generate_claims.py --help
 ```
 
 See [`docs/synthetic-data.md`](../docs/synthetic-data.md) for the schema intent and reproducibility options.
+
+`build_dynamodb_seed.py` transforms the same claims into low-level DynamoDB `PutRequest` objects without contacting AWS:
+
+```bash
+PYTHONPATH=backend:. python3 scripts/build_dynamodb_seed.py
+```

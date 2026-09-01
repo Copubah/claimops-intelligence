@@ -9,6 +9,10 @@ The Python backend will keep business rules independent from AWS integrations:
 
 Lambda handlers in `/lambdas` remain thin composition roots. Phase 5 introduces the read-only Claims API with an in-memory repository adapter; DynamoDB arrives in Phase 6.
 
+Phase 6 adds the executable DynamoDB claim mapper and read adapter. Local API composition still defaults to the in-memory adapter until AWS runtime configuration is introduced; no AWS call is made on import.
+
+Set `CLAIMOPS_REPOSITORY=dynamodb`, `CLAIMOPS_TABLE_NAME`, and `CLAIMOPS_AWS_REGION` to select the DynamoDB adapter. The default remains `memory`; AWS credentials are never stored in application configuration.
+
 ## Run locally
 
 From the repository root:

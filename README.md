@@ -2,7 +2,7 @@
 
 ClaimOps Intelligence is a portfolio-grade, cloud-native insurance claims operations platform designed around the workflow **Monitor → Detect → Prioritize → Recommend → Act → Report**. It uses fictional data only and is intended to demonstrate serverless AWS architecture, operational analytics, auditable action management, and automated reporting.
 
-> Status: Phase 5 complete — read-only Python Claims API with validated filtering and pagination. DynamoDB and AWS resources are not implemented yet.
+> Status: Phase 6 complete — executable DynamoDB entity mapping and read adapter. AWS resources are not provisioned yet.
 
 ## Problem statement
 
@@ -150,7 +150,7 @@ Confirm that documentation renders the Mermaid diagrams on GitHub, `.env` is ign
 
 ## Roadmap
 
-Development follows the 40 gated phases in the project brief. The next phase, only after explicit approval, is **Phase 6 — DynamoDB data model**.
+Development follows the 40 gated phases in the project brief. The next phase, only after explicit approval, is **Phase 7 — Claims management interface**.
 
 ## Future improvements
 
