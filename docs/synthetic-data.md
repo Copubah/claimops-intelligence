@@ -25,5 +25,6 @@ CSV is also supported with `--format csv --output data/generated/claims.csv`. Ne
 
 The generator deliberately creates all SLA bands, missing-document follow-ups, explainable high-risk review cases, rejections, unassigned open claims, uneven agent workloads, partner-specific patterns, and excess Document Review volume. These patterns exist to make future operational views meaningful; they are not real business rules or fraud determinations.
 
-Every record contains `data_classification: SYNTHETIC`. Amounts use KES and are fictional. Generation is deterministic for the same count, seed, and reference timestamp.
+Document readiness is explicit on every claim. `required_documents` lists the fictional requirements for its claim type, `submitted_documents` lists those received, and `missing_documents` lists the remainder. `documentation_status` is `COMPLETE` only when every required document has been submitted; otherwise it is `INCOMPLETE`.
 
+Every record contains `data_classification: SYNTHETIC`. Amounts use KES and are fictional. Generation is deterministic for the same count, seed, and reference timestamp.

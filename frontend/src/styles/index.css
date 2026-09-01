@@ -156,7 +156,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .heading-meta .eyebrow { margin-bottom: 0; }
 .synthetic-badge { padding: 3px 7px; border: 1px solid #cbded5; border-radius: 4px; color: #47705d; background: #edf5f1; font-size: 8px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .metric-grid { display: grid; gap: 10px; }
-.primary-metrics { grid-template-columns: repeat(7, minmax(120px, 1fr)); }
+.primary-metrics { grid-template-columns: repeat(8, minmax(112px, 1fr)); }
 .secondary-metrics { grid-template-columns: repeat(7, minmax(110px, 1fr)); }
 .metric-card { position: relative; min-width: 0; padding: 17px 16px 14px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
 .metric-card.is-prominent { min-height: 128px; padding-top: 18px; }
@@ -228,6 +228,11 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   .main-column { margin-left: 0; }
   .menu-button { display: grid; }
   .topbar { padding: 0 20px; }
+  .primary-metrics, .secondary-metrics { grid-template-columns: repeat(4, minmax(120px, 1fr)); }
+  .dashboard-grid, .dashboard-grid-bottom { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 961px) and (max-width: 1200px) {
   .primary-metrics, .secondary-metrics { grid-template-columns: repeat(4, minmax(120px, 1fr)); }
   .dashboard-grid, .dashboard-grid-bottom { grid-template-columns: 1fr; }
 }

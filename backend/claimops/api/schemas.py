@@ -37,7 +37,10 @@ class ClaimSummaryResponse(BaseModel):
     assigned_agent: str | None
     sla_deadline: datetime
     sla_status: Literal["HEALTHY", "WATCH", "AT_RISK", "BREACHED", "UNKNOWN"]
+    required_documents: list[str]
+    submitted_documents: list[str]
     missing_documents: list[str]
+    documentation_status: Literal["COMPLETE", "INCOMPLETE"]
     risk_score: int = Field(ge=0, le=100)
     risk_level: Literal["LOW", "MEDIUM", "HIGH"]
     approval_status: str
@@ -70,6 +73,7 @@ class ClaimQuery(BaseModel):
     assigned_agent: str | None = None
     sla_status: Literal["HEALTHY", "WATCH", "AT_RISK", "BREACHED"] | None = None
     risk_level: Literal["LOW", "MEDIUM", "HIGH"] | None = None
+    documentation_status: Literal["COMPLETE", "INCOMPLETE"] | None = None
     minimum_risk_score: int | None = Field(default=None, ge=0, le=100)
     missing_document: str | None = None
     created_from: datetime | None = None
@@ -99,4 +103,3 @@ class ErrorDetail(BaseModel):
 
 class ErrorResponse(BaseModel):
     error: ErrorDetail
-

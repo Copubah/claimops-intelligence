@@ -51,6 +51,7 @@ class ClaimService:
             "assigned_agent": filters.assigned_agent,
             "sla_status": filters.sla_status,
             "risk_level": filters.risk_level,
+            "documentation_status": filters.documentation_status,
         }
         for field, expected in exact_filters.items():
             if expected is not None and str(claim.get(field, "")).casefold() != expected.casefold():
@@ -86,4 +87,3 @@ class ClaimService:
             return offset
         except (ValueError, UnicodeDecodeError, binascii.Error) as error:
             raise InvalidCursorError() from error
-

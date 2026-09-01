@@ -14,8 +14,8 @@ class ClaimFilters:
     assigned_agent: str | None = None
     sla_status: str | None = None
     risk_level: str | None = None
+    documentation_status: str | None = None
     minimum_risk_score: int | None = None
     missing_document: str | None = None
     created_from: datetime | None = None
     created_to: datetime | None = None
-

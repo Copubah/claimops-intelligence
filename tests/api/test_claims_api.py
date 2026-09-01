@@ -68,6 +68,22 @@ def test_filters_are_combined_case_insensitively() -> None:
         assert target["missing_documents"][0] in item["missing_documents"]
 
 
+def test_document_completeness_is_explicit_and_filterable() -> None:
+    complete = request("GET", "/api/v1/claims", params={"documentation_status": "COMPLETE", "limit": 100})
+    incomplete = request("GET", "/api/v1/claims", params={"documentation_status": "INCOMPLETE", "limit": 100})
+    assert complete.status_code == 200
+    assert incomplete.status_code == 200
+    assert complete.json()["total"] > 0
+    assert incomplete.json()["total"] > 0
+    for claim in complete.json()["items"]:
+        assert claim["documentation_status"] == "COMPLETE"
+        assert claim["missing_documents"] == []
+        assert set(claim["submitted_documents"]) == set(claim["required_documents"])
+    for claim in incomplete.json()["items"]:
+        assert claim["documentation_status"] == "INCOMPLETE"
+        assert claim["missing_documents"]
+
+
 def test_claim_detail_and_case_normalization() -> None:
     claim_id = CLAIMS[0]["claim_id"]
     response = request("GET", f"/api/v1/claims/{claim_id.lower()}")

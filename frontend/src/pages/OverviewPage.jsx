@@ -35,6 +35,7 @@ export function OverviewPage() {
     ['SLA at risk', metrics.sla_at_risk, 'Requires prioritization', 'warning'],
     ['SLA breached', metrics.sla_breached, 'Immediate action', 'critical'],
     ['Risk review', metrics.risk_review, 'Additional review', 'critical'],
+    ['Documents complete', metrics.documents_complete, 'All required submitted', 'positive'],
     ['Missing documents', metrics.missing_documents, 'Open follow-ups', 'warning'],
   ]
   const secondaryMetrics = [

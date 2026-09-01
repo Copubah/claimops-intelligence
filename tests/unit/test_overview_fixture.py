@@ -36,10 +36,14 @@ class OverviewFixtureTests(unittest.TestCase):
         self.assertEqual(payload["metrics"]["pending"] + payload["metrics"]["approved"] + payload["metrics"]["rejected"], 2000)
         self.assertGreater(payload["metrics"]["sla_breached"], 0)
         self.assertGreater(payload["metrics"]["missing_documents"], 0)
+        self.assertGreater(payload["metrics"]["documents_complete"], 0)
+        self.assertEqual(
+            payload["metrics"]["documents_complete"] + payload["metrics"]["missing_documents"],
+            payload["metrics"]["pending"],
+        )
         self.assertEqual(len(payload["attention"]), 7)
         self.assertEqual(sum(item["value"] for item in payload["sla_distribution"]), payload["metrics"]["pending"])
 
 
 if __name__ == "__main__":
     unittest.main()
-

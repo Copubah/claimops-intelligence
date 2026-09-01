@@ -36,7 +36,8 @@ class SyntheticClaimsTests(unittest.TestCase):
         required = {
             "claim_id", "created_at", "updated_at", "partner", "product", "claim_type",
             "status", "stage", "amount", "assigned_agent", "sla_deadline", "sla_status",
-            "missing_documents", "risk_score", "rejection_reason", "approval_status",
+            "required_documents", "submitted_documents", "missing_documents", "documentation_status",
+            "risk_score", "rejection_reason", "approval_status",
             "tat_hours", "qa_score",
         }
         self.assertEqual(len(claims), 2000)
@@ -49,6 +50,14 @@ class SyntheticClaimsTests(unittest.TestCase):
         sla_states = {claim["sla_status"] for claim in claims}
         self.assertTrue({"HEALTHY", "WATCH", "AT_RISK", "BREACHED"} <= sla_states)
         self.assertTrue(any(claim["missing_documents"] for claim in claims))
+        self.assertTrue(any(claim["documentation_status"] == "COMPLETE" for claim in claims))
+        self.assertTrue(any(claim["documentation_status"] == "INCOMPLETE" for claim in claims))
+        for claim in claims:
+            self.assertEqual(
+                set(claim["required_documents"]),
+                set(claim["submitted_documents"]) | set(claim["missing_documents"]),
+            )
+            self.assertFalse(set(claim["submitted_documents"]) & set(claim["missing_documents"]))
         self.assertTrue(any(claim["risk_score"] >= 60 and claim["risk_signals"] for claim in claims))
         self.assertTrue(any(claim["status"] == "Rejected" and claim["rejection_reason"] for claim in claims))
         self.assertTrue(any(claim["assigned_agent"] is None for claim in claims))
@@ -67,4 +76,3 @@ class SyntheticClaimsTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -58,6 +58,7 @@ def build_overview(claims: list[dict[str, Any]], as_of: datetime) -> dict[str, A
         "sla_at_risk": sum(claim["sla_status"] == "AT_RISK" for claim in open_claims),
         "sla_breached": sum(claim["sla_status"] == "BREACHED" for claim in open_claims),
         "missing_documents": sum(bool(claim["missing_documents"]) for claim in open_claims),
+        "documents_complete": sum(claim["documentation_status"] == "COMPLETE" for claim in open_claims),
         "risk_review": sum(claim["risk_score"] >= 60 for claim in open_claims),
         "unassigned": sum(claim["assigned_agent"] is None for claim in open_claims),
         "active_escalations": sum(claim["status"] == "Escalated" for claim in open_claims),
@@ -130,4 +131,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -26,7 +26,7 @@ Open `http://localhost:8000/docs`. The API loads `data/generated/claims.json` wh
 - `GET /api/v1/claims`
 - `GET /api/v1/claims/{claim_id}`
 
-List filters include partner, product, claim type, status, stage, agent, SLA status, risk level/minimum score, missing-document type, and created-at range. Results use opaque cursor pagination with a maximum page size of 100.
+List filters include partner, product, claim type, status, stage, agent, SLA status, risk level/minimum score, documentation status, missing-document type, and created-at range. Claim responses explicitly separate required, submitted, and missing documents. Results use opaque cursor pagination with a maximum page size of 100.
 
 ## Test
 

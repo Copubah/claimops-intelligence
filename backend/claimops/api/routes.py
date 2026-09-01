@@ -34,6 +34,7 @@ async def list_claims(
         assigned_agent=query.assigned_agent,
         sla_status=query.sla_status,
         risk_level=query.risk_level,
+        documentation_status=query.documentation_status,
         minimum_risk_score=query.minimum_risk_score,
         missing_document=query.missing_document,
         created_from=query.created_from,

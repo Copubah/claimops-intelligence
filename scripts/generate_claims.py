@@ -28,6 +28,12 @@ AGENTS = (
 FACILITIES = tuple(f"Fictional Facility {letter}" for letter in "ABCDEFGH")
 STAGES = ("Submitted", "Document Review", "Verification", "Assessment", "Approval", "Payment", "Closed")
 DOCUMENTS = ("Identification", "Invoice", "Discharge summary", "Medical report", "Claim form", "Supporting documents")
+REQUIRED_DOCUMENTS = {
+    "Medical": ("Identification", "Invoice", "Medical report", "Claim form"),
+    "Accident": ("Identification", "Invoice", "Medical report", "Claim form", "Supporting documents"),
+    "Hospitalization": ("Identification", "Invoice", "Discharge summary", "Medical report", "Claim form"),
+    "Income Protection": ("Identification", "Claim form", "Supporting documents"),
+}
 REJECTION_REASONS = (
     "Incomplete documentation",
     "Benefit not covered",
@@ -82,11 +88,17 @@ def make_risk_assessment(rng: random.Random, force_high: bool) -> tuple[int, lis
     return score, signals, recommendation
 
 
-def make_missing_documents(rng: random.Random, created_at: datetime, as_of: datetime, forced: bool) -> tuple[list[str], list[dict[str, Any]]]:
+def make_missing_documents(
+    rng: random.Random,
+    created_at: datetime,
+    as_of: datetime,
+    forced: bool,
+    required_documents: tuple[str, ...],
+) -> tuple[list[str], list[dict[str, Any]]]:
     missing_count = rng.choices((0, 1, 2, 3), weights=(70, 20, 8, 2), k=1)[0]
     if forced:
         missing_count = max(1, missing_count)
-    names = rng.sample(DOCUMENTS, k=missing_count)
+    names = rng.sample(required_documents, k=min(missing_count, len(required_documents)))
     follow_ups: list[dict[str, Any]] = []
     for name in names:
         requested_at = min(as_of, created_at + timedelta(hours=rng.randint(1, 30)))
@@ -118,6 +130,8 @@ def generate_claims(count: int = 2000, seed: int = 20260831, as_of: datetime | N
         claim_id = f"CLM-{28000 + index:05d}"
         created_at = reference - timedelta(minutes=rng.randint(5, 90 * 24 * 60))
         partner = rng.choice(PARTNERS)
+        claim_type = rng.choice(CLAIM_TYPES)
+        product = rng.choice(PRODUCTS)
 
         # Deliberate operational patterns: FarmTrust documentation delays,
         # MobiFund rejection pressure, and a Document Review bottleneck.
@@ -158,7 +172,11 @@ def generate_claims(count: int = 2000, seed: int = 20260831, as_of: datetime | N
             current_sla = sla_status(deadline, reference)
 
         force_docs = partner == "FarmTrust" and index % 3 == 0
-        missing_documents, document_follow_up = make_missing_documents(rng, created_at, reference, force_docs and not final)
+        required_documents = REQUIRED_DOCUMENTS[claim_type]
+        missing_documents, document_follow_up = make_missing_documents(
+            rng, created_at, reference, force_docs and not final, required_documents
+        )
+        submitted_documents = [document for document in required_documents if document not in missing_documents]
         force_risk = index % 37 == 0
         risk_score, risk_signals, risk_recommendation = make_risk_assessment(rng, force_risk)
         assigned_agent = None if (not final and index % 17 == 0) else rng.choices(AGENTS, weights=(24, 20, 15, 12, 9, 8, 7, 5), k=1)[0]
@@ -173,8 +191,8 @@ def generate_claims(count: int = 2000, seed: int = 20260831, as_of: datetime | N
                 "created_at": iso(created_at),
                 "updated_at": iso(updated_at),
                 "partner": partner,
-                "product": rng.choice(PRODUCTS),
-                "claim_type": rng.choice(CLAIM_TYPES),
+                "product": product,
+                "claim_type": claim_type,
                 "status": status,
                 "stage": stage,
                 "amount": amount,
@@ -183,7 +201,10 @@ def generate_claims(count: int = 2000, seed: int = 20260831, as_of: datetime | N
                 "facility": rng.choice(FACILITIES),
                 "sla_deadline": iso(deadline),
                 "sla_status": current_sla,
+                "required_documents": list(required_documents),
+                "submitted_documents": submitted_documents,
                 "missing_documents": missing_documents,
+                "documentation_status": "COMPLETE" if not missing_documents else "INCOMPLETE",
                 "document_follow_up": document_follow_up,
                 "risk_score": risk_score,
                 "risk_level": "HIGH" if risk_score >= 60 else "MEDIUM" if risk_score >= 30 else "LOW",
@@ -220,6 +241,7 @@ def summarize(claims: list[dict[str, Any]]) -> dict[str, Any]:
         "stages": dict(sorted(Counter(claim["stage"] for claim in claims).items())),
         "sla_statuses": dict(sorted(Counter(claim["sla_status"] for claim in claims).items())),
         "missing_document_claims": sum(bool(claim["missing_documents"]) for claim in claims),
+        "complete_document_claims": sum(claim["documentation_status"] == "COMPLETE" for claim in claims),
         "high_risk_claims": sum(claim["risk_level"] == "HIGH" for claim in claims),
         "rejected_claims": sum(claim["status"] == "Rejected" for claim in claims),
         "unassigned_open_claims": sum(claim["assigned_agent"] is None and claim["status"] not in FINAL_STATUSES for claim in claims),
