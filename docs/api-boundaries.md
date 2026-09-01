@@ -1,6 +1,8 @@
 # API boundaries
 
-All routes are rooted at `/api/v1`. JSON schemas, pagination cursors, filtering grammar, error envelopes, and authorization scopes will be formalized when the backend begins. List responses are cursor-paginated and bounded.
+All domain routes are rooted at `/api/v1`. Phase 5 formalizes validated claim schemas, opaque cursor pagination, bounded page sizes, filter composition, request correlation IDs, and structured error envelopes. Authorization is added with the command surface in later phases.
+
+Errors use `{ "error": { "code", "message", "request_id", "details" } }`. Clients may send `X-Request-ID`; otherwise the API creates one and returns it in the response header.
 
 ## Read APIs
 
@@ -42,4 +44,3 @@ Scheduled payloads contain `event_id`, `job_type`, `scheduled_at`, `timezone`, `
 ## Frontend boundary
 
 The SPA calls only the public API service layer in `frontend/src/services`. Feature components do not import AWS SDKs or persistence details. Server state, authorization failures, loading states, empty states, and stale-write conflicts are handled consistently by shared app infrastructure.
-

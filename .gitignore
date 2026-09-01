@@ -1,6 +1,7 @@
 # Python
 __pycache__/
 *.py[cod]
+*.egg-info/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
@@ -42,4 +43,3 @@ override.tf.json
 # Generated data and reports
 data/generated/
 reports/generated/
-

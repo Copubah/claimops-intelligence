@@ -9,3 +9,9 @@ Test fixtures are synthetic. Phase 2 introduces standard-library unit tests for 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py' -v
 ```
+
+Phase 5 also introduces pytest-based HTTP contract tests:
+
+```bash
+PYTHONPATH=backend:. pytest tests/api tests/unit -q
+```

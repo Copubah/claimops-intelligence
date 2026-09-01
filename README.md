@@ -2,7 +2,7 @@
 
 ClaimOps Intelligence is a portfolio-grade, cloud-native insurance claims operations platform designed around the workflow **Monitor → Detect → Prioritize → Recommend → Act → Report**. It uses fictional data only and is intended to demonstrate serverless AWS architecture, operational analytics, auditable action management, and automated reporting.
 
-> Status: Phase 4 complete — responsive operations overview backed by a reproducible synthetic snapshot. APIs and AWS resources are not implemented yet.
+> Status: Phase 5 complete — read-only Python Claims API with validated filtering and pagination. DynamoDB and AWS resources are not implemented yet.
 
 ## Problem statement
 
@@ -105,6 +105,12 @@ npm install
 npm run dev
 ```
 
+Run the Phase 5 API from the repository root:
+
+```bash
+PYTHONPATH=backend uvicorn claimops.api.app:app --reload --port 8000
+```
+
 ## Terraform deployment
 
 Terraform is organized into small service-oriented modules under `terraform/modules` and an environment composition root under `terraform/environments/dev`. Backend state configuration, providers, resource definitions, validation, and deployment begin in Phase 34. Production resources must not be created manually.
@@ -144,7 +150,7 @@ Confirm that documentation renders the Mermaid diagrams on GitHub, `.env` is ign
 
 ## Roadmap
 
-Development follows the 40 gated phases in the project brief. The next phase, only after explicit approval, is **Phase 5 — Claims API/backend**.
+Development follows the 40 gated phases in the project brief. The next phase, only after explicit approval, is **Phase 6 — DynamoDB data model**.
 
 ## Future improvements
 
