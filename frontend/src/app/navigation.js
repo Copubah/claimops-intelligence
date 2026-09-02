@@ -1,6 +1,6 @@
 export const navigation = [
   { label: 'Overview', path: '/', icon: 'grid' },
-  { label: 'Action Center', path: '/actions', icon: 'bolt', badge: '23' },
+  { label: 'Action Center', path: '/actions', icon: 'bolt' },
   { label: 'Claims', path: '/claims', icon: 'file' },
   { label: 'SLA Control Tower', path: '/sla', icon: 'clock' },
   { label: 'Pipeline', path: '/pipeline', icon: 'pipeline' },
@@ -81,4 +81,3 @@ export const pageContent = {
     description: 'Manage operational thresholds, report preferences, and platform configuration.',
   },
 }
-

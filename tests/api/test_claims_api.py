@@ -131,3 +131,33 @@ def test_empty_filter_result_is_valid() -> None:
     response = request("GET", "/api/v1/claims", params={"partner": "Nonexistent Fictional Partner"})
     assert response.status_code == 200
     assert response.json() == {"items": [], "next_cursor": None, "total": 0, "limit": 25}
+
+
+def test_action_queue_and_command_contract() -> None:
+    queue = request("GET", "/api/v1/actions", params={"limit": 10})
+    assert queue.status_code == 200
+    assert len(queue.json()["items"]) == 10
+    target = queue.json()["items"][0]
+    response = request(
+        "POST",
+        f"/api/v1/claims/{target['claim_id']}/actions",
+        headers={"X-Actor-Email": "manager@example.test", "Idempotency-Key": "api-action-key-001"},
+        json={"action": "ESCALATE", "expected_version": target["version"]},
+    )
+    assert response.status_code == 200
+    assert response.json()["claim"]["status"] == "Escalated"
+    assert response.json()["claim"]["version"] == target["version"] + 1
+    assert response.json()["audit_event"]["action"] == "ESCALATE"
+
+    high_queue = request("GET", "/api/v1/actions", params={"limit": 10, "priority": "HIGH"})
+    assert high_queue.status_code == 200
+    assert high_queue.json()["items"]
+    assert all(item["priority"] == "HIGH" for item in high_queue.json()["items"])
+
+
+def test_action_requires_actor_and_idempotency_headers() -> None:
+    response = request(
+        "POST", "/api/v1/claims/CLM-28001/actions", json={"action": "ESCALATE", "expected_version": 1}
+    )
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "VALIDATION_ERROR"

@@ -24,6 +24,7 @@ class FakeDynamoClient:
         self.item = item
         self.query_calls: list[dict[str, Any]] = []
         self.get_calls: list[dict[str, Any]] = []
+        self.transact_calls: list[dict[str, Any]] = []
 
     def get_item(self, **kwargs: Any) -> dict[str, Any]:
         self.get_calls.append(kwargs)
@@ -36,6 +37,10 @@ class FakeDynamoClient:
         if index < len(self.pages) - 1:
             response["LastEvaluatedKey"] = {"PK": {"S": "cursor"}, "SK": {"S": "cursor"}}
         return response
+
+    def transact_write_items(self, **kwargs: Any) -> dict[str, Any]:
+        self.transact_calls.append(kwargs)
+        return {}
 
 
 def synthetic_claims(count: int = 3) -> list[dict[str, Any]]:
@@ -105,7 +110,30 @@ def test_repository_consumes_query_pages_without_scan() -> None:
     assert client.query_calls[1]["ExclusiveStartKey"]
 
 
+def test_repository_commits_claim_and_audit_in_one_transaction() -> None:
+    claim = synthetic_claims(1)[0]
+    claim["version"] = 2
+    event = {
+        "event_id": "event-1",
+        "timestamp": "2026-08-31T12:00:00Z",
+        "actor": "manager@example.test",
+        "action": "ESCALATE",
+        "claim_id": claim["claim_id"],
+        "previous_value": {"status": "Pending"},
+        "new_value": {"status": "Escalated"},
+    }
+    client = FakeDynamoClient()
+    result = DynamoClaimRepository(client, "claimops-test").commit_action(claim, event, expected_version=1)
+    assert result == claim
+    assert len(client.transact_calls) == 1
+    transaction = client.transact_calls[0]["TransactItems"]
+    assert len(transaction) == 2
+    assert transaction[0]["Put"]["ConditionExpression"] == "#version = :expected"
+    audit_item = deserialize_item(transaction[1]["Put"]["Item"])
+    assert audit_item["SK"].startswith("EVENT#")
+    assert audit_item["entity_type"] == "AUDIT_EVENT"
+
+
 def test_table_name_is_required() -> None:
     with pytest.raises(ValueError, match="table_name"):
         DynamoClaimRepository(FakeDynamoClient(), " ")
-

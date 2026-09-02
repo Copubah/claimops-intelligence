@@ -45,6 +45,7 @@ class ClaimSummaryResponse(BaseModel):
     risk_level: Literal["LOW", "MEDIUM", "HIGH"]
     approval_status: str
     tat_hours: float | None = Field(default=None, ge=0)
+    version: int = Field(ge=1)
 
 
 class ClaimDetailResponse(ClaimSummaryResponse):
@@ -55,6 +56,69 @@ class ClaimDetailResponse(ClaimSummaryResponse):
     rejection_reason: str | None
     qa_score: int | None = Field(default=None, ge=0, le=100)
     data_classification: Literal["SYNTHETIC"]
+    risk_review_status: str
+    notes: list[dict[str, Any]]
+
+
+class ClaimActionRequest(BaseModel):
+    action: Literal[
+        "ASSIGN", "REASSIGN", "ESCALATE", "REQUEST_DOCUMENTS", "ADD_FOLLOW_UP",
+        "ADD_NOTE", "RESOLVE", "MARK_REVIEWED",
+    ]
+    expected_version: int = Field(ge=1)
+    owner: str | None = Field(default=None, min_length=2, max_length=80)
+    documents: list[str] = Field(default_factory=list, max_length=10)
+    note: str | None = Field(default=None, min_length=2, max_length=500)
+    resolution: Literal["Approved", "Rejected", "Closed"] | None = None
+
+    @model_validator(mode="after")
+    def validate_action_fields(self) -> "ClaimActionRequest":
+        if self.action in {"ASSIGN", "REASSIGN"} and not self.owner:
+            raise ValueError("owner is required for assignment actions")
+        if self.action == "REQUEST_DOCUMENTS" and not self.documents:
+            raise ValueError("documents are required for REQUEST_DOCUMENTS")
+        if self.action in {"ADD_NOTE", "ADD_FOLLOW_UP"} and not self.note:
+            raise ValueError("note is required for note and follow-up actions")
+        if self.action == "RESOLVE" and not self.resolution:
+            raise ValueError("resolution is required for RESOLVE")
+        return self
+
+
+class AuditEventResponse(BaseModel):
+    event_id: str
+    timestamp: datetime
+    actor: str
+    action: str
+    claim_id: str
+    previous_value: dict[str, Any]
+    new_value: dict[str, Any]
+
+
+class ClaimActionResponse(BaseModel):
+    claim: ClaimDetailResponse
+    audit_event: AuditEventResponse
+    replayed: bool = False
+
+
+class ActionItemResponse(BaseModel):
+    priority: Literal["CRITICAL", "HIGH", "MEDIUM"]
+    claim_id: str
+    issue: str
+    stage: str
+    age_hours: float = Field(ge=0)
+    sla_status: str
+    sla_deadline: datetime
+    owner: str | None
+    partner: str
+    recommended_action: str
+    version: int
+
+
+class ActionQueueResponse(BaseModel):
+    items: list[ActionItemResponse]
+    total: int
+    critical: int
+    high: int
 
 
 class ClaimListResponse(BaseModel):

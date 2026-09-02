@@ -38,7 +38,7 @@ class SyntheticClaimsTests(unittest.TestCase):
             "status", "stage", "amount", "assigned_agent", "sla_deadline", "sla_status",
             "required_documents", "submitted_documents", "missing_documents", "documentation_status",
             "risk_score", "rejection_reason", "approval_status",
-            "tat_hours", "qa_score",
+            "tat_hours", "qa_score", "version", "risk_review_status", "notes",
         }
         self.assertEqual(len(claims), 2000)
         self.assertEqual(len({claim["claim_id"] for claim in claims}), 2000)

@@ -215,6 +215,9 @@ def generate_claims(count: int = 2000, seed: int = 20260831, as_of: datetime | N
                 "tat_hours": tat_hours,
                 "qa_score": qa_score,
                 "data_classification": "SYNTHETIC",
+                "version": 1,
+                "risk_review_status": "PENDING" if risk_score >= 60 else "NOT_REQUIRED",
+                "notes": [],
             }
         )
     return claims

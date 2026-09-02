@@ -10,7 +10,7 @@ SCHEMA_VERSION = 1
 CLAIM_INDEX = "GSI1"
 METADATA_FIELDS = {
     "PK", "SK", "GSI1PK", "GSI1SK", "GSI2PK", "GSI2SK", "GSI3PK", "GSI3SK",
-    "GSI4PK", "GSI4SK", "GSI5PK", "GSI5SK", "entity_type", "schema_version", "version",
+    "GSI4PK", "GSI4SK", "GSI5PK", "GSI5SK", "entity_type", "schema_version",
 }
 
 
@@ -18,6 +18,8 @@ class DynamoDBClient(Protocol):
     def get_item(self, **kwargs: Any) -> Mapping[str, Any]: ...
 
     def query(self, **kwargs: Any) -> Mapping[str, Any]: ...
+
+    def transact_write_items(self, **kwargs: Any) -> Mapping[str, Any]: ...
 
 
 def claim_to_item(claim: Mapping[str, Any]) -> dict[str, Any]:
@@ -110,6 +112,61 @@ class DynamoClaimRepository:
                 break
         return claims
 
+    def commit_action(
+        self, claim: Mapping[str, Any], event: Mapping[str, Any], expected_version: int
+    ) -> Mapping[str, Any]:
+        from botocore.exceptions import ClientError
+        from claimops.domain.errors import VersionConflictError
+
+        claim_item = serialize_item(claim_to_item(claim))
+        audit_item = serialize_item(
+            {
+                **dict(event),
+                "PK": f"CLAIM#{claim['claim_id']}",
+                "SK": f"EVENT#{event['timestamp']}#{event['event_id']}",
+                "entity_type": "AUDIT_EVENT",
+                "schema_version": SCHEMA_VERSION,
+                "created_at": event["timestamp"],
+                "updated_at": event["timestamp"],
+            }
+        )
+        try:
+            self._client.transact_write_items(
+                TransactItems=[
+                    {
+                        "Put": {
+                            "TableName": self._table_name,
+                            "Item": claim_item,
+                            "ConditionExpression": "#version = :expected",
+                            "ExpressionAttributeNames": {"#version": "version"},
+                            "ExpressionAttributeValues": {":expected": {"N": str(expected_version)}},
+                        }
+                    },
+                    {"Put": {"TableName": self._table_name, "Item": audit_item}},
+                ]
+            )
+        except ClientError as error:
+            if error.response.get("Error", {}).get("Code") == "TransactionCanceledException":
+                current = self.get(str(claim["claim_id"]))
+                actual = int(current.get("version", 1)) if current else expected_version
+                raise VersionConflictError(expected_version, actual) from error
+            raise
+        return dict(claim)
+
+    def list_audit_events(self, claim_id: str) -> Sequence[Mapping[str, Any]]:
+        response = self._client.query(
+            TableName=self._table_name,
+            KeyConditionExpression="#pk = :pk AND begins_with(#sk, :event)",
+            ExpressionAttributeNames={"#pk": "PK", "#sk": "SK"},
+            ExpressionAttributeValues={":pk": {"S": f"CLAIM#{claim_id}"}, ":event": {"S": "EVENT#"}},
+            ScanIndexForward=False,
+        )
+        events = []
+        for raw in response.get("Items", []):
+            item = deserialize_item(raw)
+            events.append({key: _from_decimal(value) for key, value in item.items() if key not in METADATA_FIELDS})
+        return events
+
 
 def _to_decimal(value: Any) -> Any:
     if isinstance(value, float):
@@ -129,4 +186,3 @@ def _from_decimal(value: Any) -> Any:
     if isinstance(value, list):
         return [_from_decimal(item) for item in value]
     return value
-

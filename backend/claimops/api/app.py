@@ -14,11 +14,12 @@ from fastapi.responses import JSONResponse
 
 from claimops import __version__
 from claimops.api.routes import router
-from claimops.domain.errors import ClaimNotFoundError, InvalidCursorError
+from claimops.domain.errors import ClaimNotFoundError, InvalidActionError, InvalidCursorError, VersionConflictError
 from claimops.repositories.memory import InMemoryClaimRepository
 from claimops.repositories.claims import ClaimRepository
 from claimops.repositories.dynamodb import DynamoClaimRepository
 from claimops.services.claims import ClaimService
+from claimops.services.actions import ActionService
 
 
 def load_local_claims() -> list[dict[str, Any]]:
@@ -48,6 +49,7 @@ def create_app(claims: Iterable[Mapping[str, Any]] | None = None) -> FastAPI:
     )
     repository = create_claim_repository(claims)
     application.state.claim_service = ClaimService(repository)
+    application.state.action_service = ActionService(repository)
     application.add_middleware(
         CORSMiddleware,
         allow_origins=[
@@ -57,8 +59,8 @@ def create_app(claims: Iterable[Mapping[str, Any]] | None = None) -> FastAPI:
             "http://127.0.0.1:5174",
         ],
         allow_credentials=False,
-        allow_methods=["GET"],
-        allow_headers=["Accept", "Content-Type", "X-Request-ID"],
+        allow_methods=["GET", "POST"],
+        allow_headers=["Accept", "Content-Type", "X-Request-ID", "X-Actor-Email", "Idempotency-Key"],
     )
 
     @application.middleware("http")
@@ -77,6 +79,14 @@ def create_app(claims: Iterable[Mapping[str, Any]] | None = None) -> FastAPI:
     @application.exception_handler(InvalidCursorError)
     async def invalid_cursor(request: Request, error: InvalidCursorError) -> JSONResponse:
         return error_response(request, 400, "INVALID_CURSOR", str(error))
+
+    @application.exception_handler(InvalidActionError)
+    async def invalid_action(request: Request, error: InvalidActionError) -> JSONResponse:
+        return error_response(request, 400, "INVALID_ACTION", str(error))
+
+    @application.exception_handler(VersionConflictError)
+    async def version_conflict(request: Request, error: VersionConflictError) -> JSONResponse:
+        return error_response(request, 409, "VERSION_CONFLICT", str(error))
 
     @application.exception_handler(RequestValidationError)
     async def validation_error(request: Request, error: RequestValidationError) -> JSONResponse:

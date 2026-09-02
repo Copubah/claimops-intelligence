@@ -20,4 +20,3 @@ test('buildClaimsQuery omits blank values and encodes filters', () => {
 test('buildClaimsQuery trims user input', () => {
   assert.equal(buildClaimsQuery({ search: '  FarmTrust  ' }), 'search=FarmTrust')
 })
-

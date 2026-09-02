@@ -29,8 +29,12 @@ Open `http://localhost:8000/docs`. The API loads `data/generated/claims.json` wh
 - `GET /health`
 - `GET /api/v1/claims`
 - `GET /api/v1/claims/{claim_id}`
+- `GET /api/v1/actions`
+- `POST /api/v1/claims/{claim_id}/actions`
 
 List filters include partner, product, claim type, status, stage, agent, SLA status, risk level/minimum score, documentation status, missing-document type, and created-at range. Claim responses explicitly separate required, submitted, and missing documents. Results use opaque cursor pagination with a maximum page size of 100.
+
+Action commands require `X-Actor-Email` and `Idempotency-Key` headers plus the claim's expected version. Local actions update the in-memory claim state; DynamoDB actions use a transactional claim-and-audit write. Recommendations never mutate claims automatically.
 
 ## Test
 

@@ -39,6 +39,8 @@ Commands require an `Idempotency-Key`, actor context, expected entity version wh
 
 Phase 7 adds bounded free-text claim search across claim ID, fictional partner, product, claim type, assigned agent, and facility. It composes with exact operational filters such as SLA and document-completeness status; search input is validated to 2–80 characters.
 
+Phase 8 implements `GET /actions` and `POST /claims/{id}/actions`. Commands require actor and idempotency headers plus `expected_version`; conflicts return `409 VERSION_CONFLICT`. A successful command returns the updated claim and its immutable audit event. Queue recommendations are advisory and never execute automatically.
+
 ## Internal event contracts
 
 Scheduled payloads contain `event_id`, `job_type`, `scheduled_at`, `timezone`, `definition_id` when applicable, and `schema_version`. Domain events include correlation and causation IDs. Notification providers implement a small adapter contract so SNS can later be joined by Slack or Teams without changing domain services.
