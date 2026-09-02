@@ -65,6 +65,7 @@ class ClaimListResponse(BaseModel):
 
 
 class ClaimQuery(BaseModel):
+    search: str | None = Field(default=None, min_length=2, max_length=80)
     partner: str | None = None
     product: str | None = None
     claim_type: str | None = None

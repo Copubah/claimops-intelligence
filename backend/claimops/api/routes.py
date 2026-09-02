@@ -26,6 +26,7 @@ async def list_claims(
     service: Annotated[ClaimService, Depends(get_claim_service)],
 ) -> ClaimListResponse:
     filters = ClaimFilters(
+        search=query.search,
         partner=query.partner,
         product=query.product,
         claim_type=query.claim_type,

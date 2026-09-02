@@ -50,7 +50,12 @@ def create_app(claims: Iterable[Mapping[str, Any]] | None = None) -> FastAPI:
     application.state.claim_service = ClaimService(repository)
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173"],
+        allow_origins=[
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:5174",
+            "http://127.0.0.1:5174",
+        ],
         allow_credentials=False,
         allow_methods=["GET"],
         allow_headers=["Accept", "Content-Type", "X-Request-ID"],

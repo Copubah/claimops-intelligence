@@ -6,6 +6,7 @@ from datetime import datetime
 
 @dataclass(frozen=True, slots=True)
 class ClaimFilters:
+    search: str | None = None
     partner: str | None = None
     product: str | None = None
     claim_type: str | None = None

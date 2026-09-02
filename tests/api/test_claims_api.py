@@ -84,6 +84,17 @@ def test_document_completeness_is_explicit_and_filterable() -> None:
         assert claim["missing_documents"]
 
 
+def test_search_matches_claim_and_operational_dimensions() -> None:
+    target = CLAIMS[0]
+    by_claim = request("GET", "/api/v1/claims", params={"search": target["claim_id"].lower()})
+    by_partner = request("GET", "/api/v1/claims", params={"search": target["partner"].lower(), "limit": 100})
+    assert by_claim.status_code == 200
+    assert [item["claim_id"] for item in by_claim.json()["items"]] == [target["claim_id"]]
+    assert by_partner.status_code == 200
+    assert by_partner.json()["total"] > 0
+    assert all(item["partner"] == target["partner"] for item in by_partner.json()["items"])
+
+
 def test_claim_detail_and_case_normalization() -> None:
     claim_id = CLAIMS[0]["claim_id"]
     response = request("GET", f"/api/v1/claims/{claim_id.lower()}")

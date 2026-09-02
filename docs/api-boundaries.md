@@ -9,7 +9,7 @@ Errors use `{ "error": { "code", "message", "request_id", "details" } }`. Client
 | Route | Purpose |
 |---|---|
 | `GET /overview` | Above-the-fold KPIs and action summary |
-| `GET /claims` | Filtered claim search |
+| `GET /claims` | Filtered claim search with opaque cursor pagination |
 | `GET /claims/{claim_id}` | Claim, documents, risks, QA, and timeline |
 | `GET /actions` | Priority Action Center queue |
 | `GET /sla` | SLA status distribution and exposed claims |
@@ -36,6 +36,8 @@ Errors use `{ "error": { "code", "message", "request_id", "details" } }`. Client
 | `POST /reports/{run_id}/deliveries` | Retry/trigger authorized delivery |
 
 Commands require an `Idempotency-Key`, actor context, expected entity version where relevant, and an action-specific authorization scope. The API returns `409` for stale versions or conflicting transitions and never accepts actor identity from an untrusted request body.
+
+Phase 7 adds bounded free-text claim search across claim ID, fictional partner, product, claim type, assigned agent, and facility. It composes with exact operational filters such as SLA and document-completeness status; search input is validated to 2–80 characters.
 
 ## Internal event contracts
 

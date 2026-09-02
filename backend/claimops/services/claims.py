@@ -42,6 +42,14 @@ class ClaimService:
 
     @staticmethod
     def _matches(claim: Mapping[str, Any], filters: ClaimFilters) -> bool:
+        if filters.search is not None:
+            needle = filters.search.strip().casefold()
+            searchable = (
+                claim.get("claim_id"), claim.get("partner"), claim.get("product"),
+                claim.get("claim_type"), claim.get("assigned_agent"), claim.get("facility"),
+            )
+            if not any(needle in str(value or "").casefold() for value in searchable):
+                return False
         exact_filters = {
             "partner": filters.partner,
             "product": filters.product,
