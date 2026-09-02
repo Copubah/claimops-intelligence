@@ -20,6 +20,7 @@ from claimops.repositories.claims import ClaimRepository
 from claimops.repositories.dynamodb import DynamoClaimRepository
 from claimops.services.claims import ClaimService
 from claimops.services.actions import ActionService
+from claimops.services.sla import SlaControlTowerService
 
 
 def load_local_claims() -> list[dict[str, Any]]:
@@ -50,6 +51,7 @@ def create_app(claims: Iterable[Mapping[str, Any]] | None = None) -> FastAPI:
     repository = create_claim_repository(claims)
     application.state.claim_service = ClaimService(repository)
     application.state.action_service = ActionService(repository)
+    application.state.sla_service = SlaControlTowerService(repository)
     application.add_middleware(
         CORSMiddleware,
         allow_origins=[

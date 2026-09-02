@@ -2,7 +2,7 @@
 
 ClaimOps Intelligence is a portfolio-grade, cloud-native insurance claims operations platform designed around the workflow **Monitor → Detect → Prioritize → Recommend → Act → Report**. It uses fictional data only and is intended to demonstrate serverless AWS architecture, operational analytics, auditable action management, and automated reporting.
 
-> Status: Phase 9 complete — configurable, timezone-safe SLA calculation and transition engine. AWS resources are not provisioned yet.
+> Status: Phase 10 complete — live, responsive SLA Control Tower with operational exposure details. AWS resources are not provisioned yet.
 
 ## Problem statement
 
@@ -150,7 +150,7 @@ Confirm that documentation renders the Mermaid diagrams on GitHub, `.env` is ign
 
 ## Roadmap
 
-Development follows the 40 gated phases in the project brief. The next phase, only after explicit approval, is **Phase 10 — SLA Control Tower**.
+Development follows the 40 gated phases in the project brief. The next phase, only after explicit approval, is **Phase 11 — Claims Pipeline**.
 
 ## Future improvements
 

@@ -161,3 +161,19 @@ def test_action_requires_actor_and_idempotency_headers() -> None:
     )
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "VALIDATION_ERROR"
+
+
+def test_sla_control_tower_contract_and_filtering() -> None:
+    response = request("GET", "/api/v1/sla", params={"limit": 10})
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["total_open"] > 0
+    assert len(payload["items"]) == 10
+    assert sum(payload["summary"].values()) == payload["total_open"]
+    assert payload["thresholds"] == {"at_risk_minutes": 30, "watch_minutes": 60}
+    assert {"status", "remaining_seconds", "breached_by_seconds", "stage", "assigned_agent", "partner"} <= payload["items"][0].keys()
+
+    filtered = request("GET", "/api/v1/sla", params={"status": "BREACHED", "partner": payload["items"][0]["partner"]})
+    assert filtered.status_code == 200
+    assert all(item["status"] == "BREACHED" for item in filtered.json()["items"])
+    assert all(item["partner"] == payload["items"][0]["partner"] for item in filtered.json()["items"])

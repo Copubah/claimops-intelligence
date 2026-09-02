@@ -38,6 +38,8 @@ Action commands require `X-Actor-Email` and `Idempotency-Key` headers plus the c
 
 Phase 9 adds the pure SLA engine with configurable thresholds, UTC normalization, remaining/breach durations, finalized-claim handling, and duplicate-safe transition metadata. See [`docs/sla-engine.md`](../docs/sla-engine.md).
 
+Phase 10 exposes `GET /api/v1/sla`, a live control-tower snapshot for open claims with status and partner filtering, urgency ordering, durations, stage, owner, and partner context.
+
 ## Test
 
 ```bash

@@ -2,7 +2,7 @@ from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Header, Query
 
-from claimops.api.dependencies import get_action_service, get_claim_service
+from claimops.api.dependencies import get_action_service, get_claim_service, get_sla_service
 from claimops.api.schemas import (
     ActionQueueResponse,
     ClaimActionRequest,
@@ -12,10 +12,13 @@ from claimops.api.schemas import (
     ClaimQuery,
     ErrorResponse,
     HealthResponse,
+    SlaControlTowerResponse,
 )
+from claimops.domain.sla import SlaStatus
 from claimops.domain.types import ClaimFilters
 from claimops.services.actions import ActionCommand, ActionService
 from claimops.services.claims import ClaimService
+from claimops.services.sla import SlaControlTowerService
 
 router = APIRouter()
 
@@ -72,6 +75,16 @@ async def list_actions(
     priority: Annotated[Literal["CRITICAL", "HIGH", "MEDIUM"] | None, Query()] = None,
 ) -> ActionQueueResponse:
     return ActionQueueResponse.model_validate(service.action_queue(limit, priority))
+
+
+@router.get("/api/v1/sla", response_model=SlaControlTowerResponse, tags=["sla"])
+async def sla_control_tower(
+    service: Annotated[SlaControlTowerService, Depends(get_sla_service)],
+    status: Annotated[SlaStatus | None, Query()] = None,
+    partner: Annotated[str | None, Query(min_length=2, max_length=80)] = None,
+    limit: Annotated[int, Query(ge=1, le=250)] = 100,
+) -> SlaControlTowerResponse:
+    return SlaControlTowerResponse.model_validate(service.snapshot(status=status, partner=partner, limit=limit))
 
 
 @router.post(

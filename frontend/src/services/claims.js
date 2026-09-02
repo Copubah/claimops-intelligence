@@ -38,6 +38,11 @@ export function getActions({ limit = 100, priority, signal } = {}) {
   return apiRequest(`/actions?${query}`, { signal })
 }
 
+export function getSlaSnapshot({ limit = 100, status, partner, signal } = {}) {
+  const query = buildClaimsQuery({ limit, status: status === 'ALL' ? '' : status, partner })
+  return apiRequest(`/sla?${query}`, { signal })
+}
+
 export function executeClaimAction(claimId, command, { actor = 'manager@example.test' } = {}) {
   return apiRequest(`/claims/${encodeURIComponent(claimId)}/actions`, {
     method: 'POST',

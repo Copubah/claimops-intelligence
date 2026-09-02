@@ -121,6 +121,39 @@ class ActionQueueResponse(BaseModel):
     high: int
 
 
+class SlaItemResponse(BaseModel):
+    claim_id: str
+    status: Literal["HEALTHY", "WATCH", "AT_RISK", "BREACHED", "UNKNOWN"]
+    deadline: datetime | None
+    remaining_seconds: float = Field(ge=0)
+    breached_by_seconds: float = Field(ge=0)
+    stage: str
+    assigned_agent: str | None
+    partner: str
+
+
+class SlaSummaryResponse(BaseModel):
+    healthy: int = Field(ge=0)
+    watch: int = Field(ge=0)
+    at_risk: int = Field(ge=0)
+    breached: int = Field(ge=0)
+    unknown: int = Field(ge=0)
+
+
+class SlaThresholdsResponse(BaseModel):
+    at_risk_minutes: int = Field(ge=0)
+    watch_minutes: int = Field(gt=0)
+
+
+class SlaControlTowerResponse(BaseModel):
+    evaluated_at: datetime
+    thresholds: SlaThresholdsResponse
+    summary: SlaSummaryResponse
+    total_open: int = Field(ge=0)
+    total_matching: int = Field(ge=0)
+    items: list[SlaItemResponse]
+
+
 class ClaimListResponse(BaseModel):
     items: list[ClaimSummaryResponse]
     next_cursor: str | None

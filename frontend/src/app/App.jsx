@@ -8,6 +8,7 @@ import { pageContent } from './navigation.js'
 const OverviewPage = lazy(() => import('../pages/OverviewPage.jsx').then((module) => ({ default: module.OverviewPage })))
 const ClaimsPage = lazy(() => import('../pages/ClaimsPage.jsx').then((module) => ({ default: module.ClaimsPage })))
 const ActionCenterPage = lazy(() => import('../pages/ActionCenterPage.jsx').then((module) => ({ default: module.ActionCenterPage })))
+const SlaControlTowerPage = lazy(() => import('../pages/SlaControlTowerPage.jsx').then((module) => ({ default: module.SlaControlTowerPage })))
 
 export default function App() {
   return (
@@ -16,7 +17,8 @@ export default function App() {
         <Route index element={<Suspense fallback={<div className="route-loader" role="status">Loading operations overview…</div>}><OverviewPage /></Suspense>} />
         <Route path="/claims" element={<Suspense fallback={<div className="route-loader" role="status">Loading claims workspace…</div>}><ClaimsPage /></Suspense>} />
         <Route path="/actions" element={<Suspense fallback={<div className="route-loader" role="status">Loading Action Center…</div>}><ActionCenterPage /></Suspense>} />
-        {Object.entries(pageContent).filter(([path]) => !['/', '/claims', '/actions'].includes(path)).map(([path, content]) => (
+        <Route path="/sla" element={<Suspense fallback={<div className="route-loader" role="status">Loading SLA Control Tower…</div>}><SlaControlTowerPage /></Suspense>} />
+        {Object.entries(pageContent).filter(([path]) => !['/', '/claims', '/actions', '/sla'].includes(path)).map(([path, content]) => (
           <Route key={path} path={path} element={<ModulePage content={content} />} />
         ))}
         <Route path="/overview" element={<Navigate to="/" replace />} />
