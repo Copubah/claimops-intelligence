@@ -7,10 +7,18 @@ import argparse
 import csv
 import json
 import random
+import sys
 from collections import Counter
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, Iterable
+
+ROOT = Path(__file__).parents[1]
+sys.path.insert(0, str(ROOT / "backend"))
+
+from claimops.domain.sla import SlaEngine  # noqa: E402
+
+SLA_ENGINE = SlaEngine()
 
 PARTNERS = ("AfriCredit", "MobiFund", "FarmTrust", "QuickFinance", "Horizon Bank")
 PRODUCTS = ("Family Health", "Income Guard", "Hospital Cash", "Accident Assist")
@@ -60,16 +68,7 @@ def iso(value: datetime) -> str:
 
 def sla_status(deadline: datetime | None, as_of: datetime) -> str:
     """Classify an SLA using the documented ClaimOps thresholds."""
-    if deadline is None:
-        return "UNKNOWN"
-    remaining_minutes = (deadline - as_of).total_seconds() / 60
-    if remaining_minutes < 0:
-        return "BREACHED"
-    if remaining_minutes < 30:
-        return "AT_RISK"
-    if remaining_minutes <= 60:
-        return "WATCH"
-    return "HEALTHY"
+    return SLA_ENGINE.evaluate(deadline, as_of).status.value
 
 
 def weighted_choice(rng: random.Random, values: Iterable[tuple[str, float]]) -> str:

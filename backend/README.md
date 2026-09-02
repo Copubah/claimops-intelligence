@@ -36,6 +36,8 @@ List filters include partner, product, claim type, status, stage, agent, SLA sta
 
 Action commands require `X-Actor-Email` and `Idempotency-Key` headers plus the claim's expected version. Local actions update the in-memory claim state; DynamoDB actions use a transactional claim-and-audit write. Recommendations never mutate claims automatically.
 
+Phase 9 adds the pure SLA engine with configurable thresholds, UTC normalization, remaining/breach durations, finalized-claim handling, and duplicate-safe transition metadata. See [`docs/sla-engine.md`](../docs/sla-engine.md).
+
 ## Test
 
 ```bash
